@@ -1,68 +1,91 @@
-def display_menu():
-    print("Command Menu")
-    print("view --> View Country name")
-    print("add --> Add a Country")
-    print("delete --> Delete a Country")
-    print("exit --> Exit the program")
-    print()
+ getDatesWorked():
+    fromDate = input("Please enter start date in the following format MM/DD/YYYY: ")
+    endDate = input("Please enter the end date in the following format MM/DD/YYYY: ")
+    return fromDate, endDate
 
-def display_codes(countries):
-    codes = list(countries.keys())
-    codes.sort()
-    codes_line = "Country codes: "
-    for code in codes:
-        codes_line += code+ " "
-    print(codes_line)
+def getEmpName():
+    empName = input("Enter employee name: ")
+    return empName
 
-def view(countries):
-    display_codes(countries)
-    code = input("Enter Country Code: ")
-    code = code.upper()
-    if code in countries:
-        name = countries[code]
-        print(f"Country name: {name}. \n")
-    else:
-        print("There is no Country with that Code. \n")
+def getHoursWorked():
+    hours = float(input("Enter Hours: "))
+    return hours
 
-def add(countries):
-    code = input("Enter Country code: ")
-    code = code.upper()
-    if code in countries:
-        name = countries[code]
-        print(f"{name} is already using tht code")
-    else:
-        name = input("Enter Country name: ")
-        name = name.title()
-        countries[code] = name
-        print(f"{name} was added. \n")
+def getHourlyRate():
+    hourlyRate = float(input("Enter hourly rate: "))
+    return hourlyRate
 
-def delete(countries):
-    code = input("Enter Country code: ")
-    code = code.upper()
-    if code in countries:
-        name = countries.pop(code)
-        print(f"{name} was deleted")
-    else:
-        print("There is no Country with that code. \n")
+def getTaxRate():
+    taxRate = float(input("Enter tax rate: "))
+    taxRate = taxRate / 100
+    return taxRate
 
-def main():
-    countries = {"AF": "Afghanistan", "DE": "Germany", "US": "United States"}
-    display_menu()
+def CalcTaxAndNetPay(hours, hourlyRate, taxRate):
+    gPay = hours * hourlyRate
+    incomeTax = gPay * taxRate
+    netPay = gPay - incomeTax
+    return gPay, incomeTax, netPay
+
+def printInfo(empDetailList):
+    totalEmployees = 0
+    totalHours = 0.00
+    totalGrossPay = 0.00
+    totalTax = 0.00
+    totalNetPay = 0.00
+
+    for empList in empDetailList:
+        fromDate = empList[0]
+        endDate = empList[1]
+        empName = empList[2]
+        hours = empList[3]
+        hourlyRate = empList[4]
+        taxRate = empList[5]
+
+        gPay, incomeTax, netPay = CalcTaxAndNetPay(hours, hourlyRate, taxRate)
+        print(f"{fromDate}, {endDate}, {empName}, {hours:.2f}, {hourlyRate:.2f}, {gPay:.2f}, {taxRate:.1%}, {incomeTax:.2f}, {netPay:.2f}")
+
+        totalEmployees += 1
+        totalHours += hours
+        totalGrossPay += gPay
+        totalTax += incomeTax
+        totalNetPay += netPay
+
+    empTotals["totEmp"] = totalEmployees
+    empTotals["totHours"] = totalHours
+    empTotals["totGross"] = totalGrossPay
+    empTotals["totTax"] = totalTax
+    empTotals["totNet"] = totalNetPay
+
+def printTotals(empTotals):
+    print(f'Total number of employees: {empTotals["totEmp"]}')
+    print(f'Total hours of the employees: {empTotals["totHours"]}')
+    print(f'Total Gross Pay of employees: {empTotals["totGross"]}')
+    print(f'Total tax of employees: {empTotals["totTax"]}')
+    print(f'Total net pay of employees: {empTotals["totNet"]}')
+
+if __name__ == "__main__":
+    empDetailList = []
+    empTotals = {}
 
     while True:
-        command = input("Command: ")
-        command = command.lower()
-        if command == "view":
-            view(countries)
-        elif command == "add":
-            add(countries)
-        elif command == "delete":
-            delete(countries)
-        elif command == "exit":
-            print("Bye")
+        empName = getEmpName()
+        if (empName.lower() == "end"):
             break
-        else:
-            print("Not a valid command, please try again. \n")
-            
-if __name__ == "__main__":
-    main()
+
+        fromDate, endDate = getDatesWorked()
+        hours = getHoursWorked()
+        hourlyRate = getHourlyRate()
+        taxRate = getTaxRate()
+
+        empDetail = []
+        empDetail.insert(0, fromDate)
+        empDetail.insert(1, endDate)
+        empDetail.insert(2, empName)
+        empDetail.insert(3, hours)
+        empDetail.insert(4, hourlyRate)
+        empDetail.insert(5, taxRate)
+
+        empDetailList.append(empDetail)
+
+    printInfo(empDetailList)
+    printTotals(empTotals)
